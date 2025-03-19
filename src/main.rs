@@ -104,24 +104,53 @@ fn main () { // match with int
     }
 }
 trait Iterator { // trait -> list of rules, iterator -> give things one at a time
-    type Item;
+    type Item; // type -> give things one at a time
     fn next(&mut self) -> Option<Self::Item>;
 }
 /////
 // Basic IntoIterator example
-struct Friends {
-    names: Vec<String>,
+struct Friends { // struct -> container that held informations
+	names: Vec<String>, // Vec -> vector (vector is a list of things)
 }
 
-impl IntoIterator for Friends {
-    type Item = String;
-    type IntoIter = std::vec::IntoIter<String>;
+impl IntoIterator for Friends { // implement IntoIterator for Friends
+	type Item = String;
+	type IntoIter = 
+	std::vec::IntoIter<Self::Item>; // self -> currenct object that are being worked on
 
-    fn into_iter(self) -> Self::IntoIter {
-        self.names.into_iter()
-    }
+	fn into_iter(self) -> Self::IntoIter {
+		self.names.into_iter()
+	}
 }
+// Borrow 
+impl<'a> IntoIterator for &'a Friends { // borrow -> give things one at a time
+	type Item = &'a String;
+	type IntoIter = std::slice::Iter<'a, String>;
 
+	fn into_iter(self) -> Self::IntoIter {
+		self.names.iter()
+	}
+}
+// Mutable Borrow 
+impl<'a> IntoIterator for &'a mut Friends { // mutable borrow -> give things one at a time
+	type Item = &'a mut String;
+	type IntoIter = std::slice::IterMut<'a, String>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		self.names.iter_mut()
+	}
+}
+// Iteration 
+let names = vec![
+	"Albert".to_owned(),
+	"Sara".to_owned(),
+];
+
+let mut friends = Friends { names };
+
+for f in friends {
+	println!("{:?}", f);
+}
 // Custom Iterator example with Color
 struct Color {
     r: u8,
